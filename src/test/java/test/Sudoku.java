@@ -92,6 +92,40 @@ public interface Sudoku {
 					}
 
 					@Override
+					public void set(int number) {
+						values[row()][col()] = number;
+					}
+
+					@Override
+					public void unset() {
+						set(0);
+					}
+
+					@Override
+					public boolean hasInRow(int number) {
+						for (int i = 0; i < SIZE; i++)
+							if (values[row()][i] == number) return true;
+						return false;
+					}
+
+					@Override
+					public boolean hasInColumn(int number) {
+						for (int i = 0; i < SIZE; i++)
+							if (values[i][col()] == number) return true;
+						return false;
+					}
+
+					@Override
+					public boolean hasInSquare(int number) {
+						int ox = 3 * (row() / 3);
+						int oy = 3 * (col() / 3);
+						for (int i = 0; i < 3; i++)
+							for (int j = 0; j < 3; j++)
+								if (values[ox+i][oy+j] == number) return true;
+						return false;
+					}
+
+					@Override
 					public boolean equals(Object obj) {
 						if (obj == null) return false;
 						return obj == this || obj instanceof Cell && equals((Cell) obj);
@@ -140,5 +174,18 @@ public interface Sudoku {
 		int row();
 		int col();
 		int value();
+
+		void set(int number);
+		void unset();
+
+		boolean hasInRow(int number);
+
+		boolean hasInColumn(int number);
+
+		boolean hasInSquare(int number);
+
+		default boolean rejects(int number) {
+			return hasInColumn(number) || hasInRow(number) || hasInSquare(number);
+		}
 	}
 }
