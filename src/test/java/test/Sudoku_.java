@@ -1,8 +1,9 @@
 package test;
 
-import org.junit.Assert;
+import es.ulpgc.seminar.Sudoku;
 import org.junit.Test;
-import test.Sudoku.Cell;
+import es.ulpgc.seminar.Sudoku.Cell;
+import es.ulpgc.seminar.Sudoku.Solver;
 
 import java.util.ArrayList;
 import java.util.List;

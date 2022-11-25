@@ -1,4 +1,4 @@
-package test;
+package es.ulpgc.seminar;
 
 import java.util.Iterator;
 
@@ -186,6 +186,20 @@ public interface Sudoku {
 
 		default boolean rejects(int number) {
 			return hasInColumn(number) || hasInRow(number) || hasInSquare(number);
+		}
+	}
+
+	interface Solver {
+		static boolean solve(Sudoku sudoku) {
+			if (!sudoku.hasEmptyCells()) return true;
+			Cell cell = sudoku.nextEmptyCell();
+			for (int number = 1; number <= 9; number++) {
+				if (cell.rejects(number)) continue;
+				cell.set(number);
+				if (solve(sudoku)) return true;
+			}
+			cell.unset();
+			return false;
 		}
 	}
 }
