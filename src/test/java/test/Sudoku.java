@@ -6,6 +6,19 @@ import static java.lang.Character.isDigit;
 
 public interface Sudoku {
 	int SIZE = 9;
+
+	Iterable<Cell> cells();
+	default boolean hasEmptyCells() {
+		return nextEmptyCell() != null;
+	}
+	default Cell nextEmptyCell() {
+		for (Cell cell : cells())
+			if (cell.isEmpty()) return cell;
+		return null;
+	}
+
+
+
 	static Sudoku of(String text) {
 		return of(text.replaceAll("[\\s\\n]","").toCharArray());
 	}
@@ -40,7 +53,7 @@ public interface Sudoku {
 			}
 
 			private Iterator<Cell> createIterator() {
-				return new Iterator<Cell>() {
+				return new Iterator<>() {
 					int index = 0;
 
 					@Override
@@ -57,15 +70,35 @@ public interface Sudoku {
 
 			private Cell createCell(int index) {
 				return new Cell() {
-					int value = values[index / SIZE][index % SIZE];
+					int value = values[row()][col()];
 					@Override
 					public boolean isEmpty() {
 						return value == 0;
 					}
 
 					@Override
+					public int row() {
+						return index / SIZE;
+					}
+
+					@Override
+					public int col() {
+						return index % SIZE;
+					}
+
+					@Override
 					public int value() {
 						return value;
+					}
+
+					@Override
+					public boolean equals(Object obj) {
+						if (obj == null) return false;
+						return obj == this || obj instanceof Cell && equals((Cell) obj);
+					}
+
+					private boolean equals(Cell cell) {
+						return row() == cell.row() && col() == cell.col();
 					}
 				};
 			}
@@ -82,14 +115,30 @@ public interface Sudoku {
 				}
 				return sb.toString().trim();
 			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (obj == null) return false;
+				return obj == this || obj instanceof Sudoku && equals((Sudoku) obj);
+			}
+
+			private boolean equals(Sudoku sudoku) {
+				int index = 0;
+				for (Cell cell : sudoku.cells()) {
+					if (cell.value() != values[index / SIZE][index % SIZE]) return false;
+					index++;
+				}
+				return true;
+			}
 		};
 	}
 
-	Iterable<Cell> cells();
 
 	interface Cell {
 		boolean isEmpty();
 
+		int row();
+		int col();
 		int value();
 	}
 }
