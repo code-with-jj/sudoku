@@ -6,6 +6,19 @@ import static java.lang.Character.isDigit;
 
 public interface Sudoku {
 	int SIZE = 9;
+
+	Iterable<Cell> cells();
+	default boolean hasEmptyCells() {
+		return nextEmptyCell() != null;
+	}
+	default Cell nextEmptyCell() {
+		for (Cell cell : cells())
+			if (cell.isEmpty()) return cell;
+		return null;
+	}
+
+
+
 	static Sudoku of(String text) {
 		return of(text.replaceAll("[\\s\\n]","").toCharArray());
 	}
@@ -82,10 +95,26 @@ public interface Sudoku {
 				}
 				return sb.toString().trim();
 			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (obj == null) return false;
+				if (obj == this) return true;
+				if (obj instanceof Sudoku) return equals((Sudoku) obj);
+				return false;
+			}
+
+			private boolean equals(Sudoku sudoku) {
+				int index = 0;
+				for (Cell cell : sudoku.cells()) {
+					if (cell.value() != values[index / SIZE][index % SIZE]) return false;
+					index++;
+				}
+				return true;
+			}
 		};
 	}
 
-	Iterable<Cell> cells();
 
 	interface Cell {
 		boolean isEmpty();
